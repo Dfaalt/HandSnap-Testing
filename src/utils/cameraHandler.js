@@ -34,15 +34,30 @@ const drawResultsToCanvas = (results, canvasRef) => {
   ctx.restore(); // Kembalikan state canvas
 };
 
+// Cek cooldown gesture biar ga spam
+const isCooldown = (key, interval) => {
+  if (!window.cooldowns) window.cooldowns = {};
+  const now = Date.now();
+  if (!window.cooldowns[key]) window.cooldowns[key] = 0;
+
+  if (now - window.cooldowns[key] < interval) {
+    return true; // masih cooldown
+  }
+
+  window.cooldowns[key] = now;
+  return false; // boleh lanjut
+};
+
 // ✌️ Tangani gesture "SS" (screenshot)
 const handleGestureSS = ({
   playSound,
   setShowFlash,
   screenStream,
   screenshotFromStreamAndUpload,
-  copiedRef,
 }) => {
-  copiedRef.current = true; // Hindari multiple trigger
+  // Cooldown gestur SS
+  if (isCooldown("ss", 2500)) return;
+
   playSound("SS");
 
   // Tampilkan animasi flash
@@ -78,13 +93,10 @@ const handleGestureTransfer = async ({
   setImageUrl,
   setPasteEffect,
   setDetectedClass,
-  copiedRef,
 }) => {
-  if (!window.lastTransferTime) window.lastTransferTime = 0;
   const now = performance.now();
-  const cooldown = 2500;
-  if (now - window.lastTransferTime < cooldown) return;
-  window.lastTransferTime = now;
+  // Cooldown gesture transfer_SS
+  if (isCooldown("transfer_ss", 2500)) return;
 
   const start = performance.now(); // ⏱️ mulai timer latency
   // Mode fetch-only: langsung ambil screenshot terakhir dari server
@@ -124,8 +136,6 @@ const handleGestureTransfer = async ({
         a.click();
         document.body.removeChild(a);
       }, 500);
-
-      copiedRef.current = false;
     } catch (err) {
       console.error("❌ Gagal fetch gambar:", err);
       toast.error(
@@ -146,7 +156,6 @@ export const setupCamera = ({
   handPresenceRef,
   frameCounterRef,
   cameraInstance,
-  copiedRef,
   model,
   labels,
   screenStream,
@@ -218,21 +227,19 @@ export const setupCamera = ({
               }
 
               setConfidence(confidence); // Tampilkan confidence secara real-time
-              // Jika waktu sekarang sudah melewati cooldown dari gesture sebelumnya
               if (now - lastTriggerTime > GESTURE_COOLDOWN) {
                 setDetectedClass(`Class: ${gesture}`); // Tampilkan nama kelas gesture
 
                 lastTriggerTime = now; // Simpan waktu trigger terakhir
 
                 // Jika gesture adalah "SS" dan belum pernah copy sebelumnya, jalankan screenshot
-                if (gesture === "SS" && !copiedRef.current) {
+                if (gesture === "SS") {
                   handleGestureSS({
                     playSound,
                     setShowFlash,
                     screenStream,
                     screenshotFromStreamAndUpload,
                     videoRef,
-                    copiedRef,
                   });
                 }
 
@@ -244,7 +251,6 @@ export const setupCamera = ({
                     setImageUrl,
                     setPasteEffect,
                     setDetectedClass,
-                    copiedRef,
                   });
                 }
 
