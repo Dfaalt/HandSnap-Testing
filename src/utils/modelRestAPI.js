@@ -40,10 +40,10 @@ export const screenshotFromStreamAndUpload = async (screenStream) => {
 
     canvas.toBlob(async (blob) => {
       if (!blob) throw new Error("Blob tidak tersedia");
-      await uploadImage(blob, "screenshot-desktop.png"); // Upload ke server
+      await uploadImage(blob, "screenshot-desktop.webp"); // Upload ke server
       console.log("✅ Desktop screenshot uploaded");
       toast.success("Screenshot successfully!", { autoClose: 2000 });
-    }, "image/png");
+    }, "image/webp");
   } catch (err) {
     console.warn("⚠️ Tidak dapat mengambil screenshot dari screen stream.");
     toast.error("Gagal mengambil screenshot dari layar.", { autoClose: 3000 });
@@ -77,7 +77,7 @@ export const fetchLastScreenshot = async (setImageUrl) => {
     const hex = res.data.image_data; // Data dari Flask berupa string heksadesimal
     // Konversi hex string ke array byte
     const binary = hex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16));
-    const blob = new Blob([new Uint8Array(binary)], { type: "image/png" });
+    const blob = new Blob([new Uint8Array(binary)], { type: "image/webp" });
 
     const imageUrl = URL.createObjectURL(blob); // Buat URL sementara dari blob
     setImageUrl(imageUrl); // Simpan ke state React
