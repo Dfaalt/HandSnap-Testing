@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { playSound } from "../utils/soundManager";
 import { toast } from "react-toastify";
 import {
   loadModel,
@@ -7,6 +6,7 @@ import {
   fetchLastScreenshot,
 } from "../utils/modelRestAPI";
 import { setupCamera } from "../utils/cameraHandler";
+import { playSound } from "../utils/soundManager";
 import { startFPSLogger, stopFPSLogger } from "../utils/performanceLogger";
 
 const HandRecognition = () => {

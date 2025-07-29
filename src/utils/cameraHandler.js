@@ -194,7 +194,7 @@ export const setupCamera = ({
 
       if (landmarks) {
         frameCounterRef.current++;
-        if (frameCounterRef.current >= 3) {
+        if (frameCounterRef.current >= 2) {
           handPresenceRef.current = true; // Setelah beberapa frame, dianggap tangan benar-benar terdeteksi
         }
 
