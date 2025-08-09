@@ -200,7 +200,7 @@ export const setupCamera = ({
         // set ONCE saat tangan baru terdeteksi
         if (!handPresenceRef.current) {
           handPresenceRef.current = true;
-          setDetectedClass("Detected gesture..."); // ← bacaan saat gestur terdeteksi
+          setDetectedClass("Detecting gesture..."); // ← bacaan saat gestur terdeteksi
           setConfidence("");
         }
 
